@@ -3,9 +3,9 @@ Collection of Python scripts for Digital Signal Processing applications for ECE4
 
 ## Prereq's
 Packages that are required:
-..* pyaudio
-..* matplotlib
-..* numpy/scipy
+* pyaudio
+* matplotlib
+* numpy/scipy
 
 To install pyaudio:
 ```
