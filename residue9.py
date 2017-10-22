@@ -35,15 +35,8 @@ zplane(zero, pole)
 N = np.linspace(0.0, 1.0, 100)
 W = N*(np.pi / 100)  # these are the frequencies we want
 
-# w : ndarray
-#
-#  The normalized frequencies at which h was computed, in radians/sample.
-#
-# h : ndarray
-#
-#  The frequency response, as complex numbers.
-zero = np.array([5, -0.4])
-pole = np.array([1, 0.8])
+zero = np.array([5, 2])
+pole = np.array([1, -0.8])
 w, h = signal.freqz(zero, pole, W)
 magH = abs(h)
 phaH = np.angle(h)
@@ -58,5 +51,7 @@ plt.subplot(412)
 plt.ylabel('Magnitude')
 plt.xlabel('frequency in Hz units')
 plt.plot((w/(2*np.pi)), magH, 'r')
+
+
 
 plt.show()
