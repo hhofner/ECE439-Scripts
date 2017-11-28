@@ -1,6 +1,7 @@
 from state import State
 
-import random 
+import random
+import copy
 
 class Path(object):
     def __init__(self):
@@ -28,6 +29,13 @@ class Path(object):
     def path(self):
         return self._path
 
+    def __repr__(self):
+        s = ''
+        for p in self._path:
+            s += (p + ' ')
+        s += '// Value: '
+        s += str(self._val)
+        return s
 
 class Trellis(object):
     def __init__(self, states):
@@ -60,21 +68,34 @@ class Trellis(object):
         mssg -- (string): the decoded message based on the trellis (state machine)
             that was set up
         """
-        
-        # Ensure that the state machine makes sense
-        # TODO: Loop through states and make sure they make sense (i.e. a state
-        #   does not forward to a state that doesn't exist. 
 
-        # Determine how many 'bits' to process
-        # Arbitrarily select some state name.
-        process_length = len(random.choice(self._states.keys())) 
+        # INPUT: LIST OF BITS
+        # I'm assumming that `stream` is a list of input bits
 
-        if len(stream) / process_length != 0:
-            print('Length not nice')
-            stream.append('0')
+        for rcvd in stream:
+            temp = []
+            # Get latest path from each path object
+            for path in self.paths:
+                # Call function `process` from previous state object
+                rt = self._states[path.prev].process(rcvd)
+                if rt != None:
+                    if len(rt) > 1:
+                        for j in range(1,len(rt)):
+                            x = copy.deepcopy(path)
+                            x.add_path(rt[j][0])
+                            x.add_val(rt[j][1])
+                            temp.append(x)
+                    path.add_path(rt[0][0])
+                    path.add_val(rt[0][1])
+            self.paths = self.paths + temp
 
-        for i in range(len(stream)):
-            pass
+        final_path = None 
+        temp_val = 10000 # Arbitrary
+        for p in self.paths:
+            if p.val <= temp_val:
+                final_path = p
+
+        print(p)
 
     def __repr__(self):
         rs = "States\n"
@@ -83,24 +104,35 @@ class Trellis(object):
         return rs
 
 def main():
-    s00 = State("00", ["01", "00"])
+    """
+    Set up your trellis here! 
+    """
+    s00 = State("00")
     s00.set_starting_state()
-    s00.set_state_logic(lambda x: "00" if x == "0" else "01")
+    s00.add_logic([(0b00, 0, "00"), (0b11, 1, "10")])
 
-    s01 = State("01", ["10", "11"])
-    s01.set_state_logic(lambda x: "10" if x == "0" else "11")
+    s01 = State("10")
+    s01.add_logic([(0b00, 1, "11"), (0b11, 0, "01")])
 
-    s10 = State("10", ["11", "10"])
-    s10.set_state_logic(lambda x: "11" if x == "0" else "10")
+    s10 = State("01")
+    s10.add_logic([(0b10, 0, "00"), (0b01, 1, "10")])
 
-    s11 = State("11", ["00", "01"])
-    s11.set_state_logic(lambda x: "00" if x == "0" else "01")
+    s11 = State("11")
+    s11.add_logic([(0b10, 1, "11"),(0b01, 0, "01")])
 
     t = Trellis([s00, s01, s10, s11])
-    print(t)
+#    print(t)
 
     t.set_up()
-    print(t.paths[0].path)
+#    print(t.paths[0].path)
+
+
+    """
+    This is the test input taken from  the MIT Lecture on Convolutional Codes
+    The input is a LIST (array) of the binary digits. 
+    """
+    tst = [0b11, 0b10, 0b11, 0b00, 0b01, 0b10]
+    t.run(tst)
 
 if __name__ == "__main__":
     main()
