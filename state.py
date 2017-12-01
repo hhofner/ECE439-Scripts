@@ -39,6 +39,15 @@ class State(object):
 
         return pvs
 
+    def return_bit(self, next_state):
+        """ Return the bit that is received
+            in the state machine to transition
+            to the next state
+        """
+        for logic in self._logic:
+            if next_state == logic[2]:
+                return logic[1]
+
     def set_starting_state(self):
         self.is_starting_state = True
 
