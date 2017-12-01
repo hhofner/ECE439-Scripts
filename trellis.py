@@ -4,6 +4,13 @@ import random
 import copy
 
 class Path(object):
+    """Class to keep track of possible paths and their values
+    
+    This is almost a direct implementation of MIT's Convolutional Coding (Lecture 9)
+    on how to decode with a trellis. This class holds a list that contains a particular
+    path through the Trellis and an associated value for that path that tells you how 
+    probable the path was.
+    """ 
     def __init__(self):
         self._val = None  # Infinite
         self._path = []
@@ -38,6 +45,22 @@ class Path(object):
         return s
 
 class Trellis(object):
+    """ Class to represent a trellis depending on a user-specified state machine.
+
+    This trellis class is a almost direct implementation of MIT's lecture notes on how
+    to decode convolutional codes (Lecture 9). This class should contain State objects
+    that describe the State Machine. Using run(bit_stream) will decode the message based 
+    on the state machine described through the State objects. 
+
+    Methods:
+    run(bit_stream) -- return a list with the decoded bit stream
+    set_up()             -- "sets up" the trellis
+
+    To properly set up a trellis, one must pass a list of State objects that 
+    properly describe the state machine for the encoder. After that, you must run
+    "set_up()". To decode a bit stream, pass the bit stream as LIST of ints (the 
+    corresponding decimal value) to the "run" function. 
+    """
     def __init__(self, states):
         self._states = {}
         for state in states:
@@ -96,7 +119,6 @@ class Trellis(object):
                 temp_val = p.val
                 final_path = p
 
-        #print(final_path)
         
         # Start decoding the path
         final_bit_stream = []
@@ -106,8 +128,6 @@ class Trellis(object):
                 temp2 = final_path.path[i+1]
             except:
                 continue
-            #print("Processing for %s -> %s" % (temp, temp2))
-            #raw_input("Next?")
             rb   = self._states[temp].return_bit(temp2)
             final_bit_stream.append(rb)
         return final_bit_stream
