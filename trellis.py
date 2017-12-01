@@ -92,10 +92,25 @@ class Trellis(object):
         final_path = None 
         temp_val = 10000 # Arbitrary
         for p in self.paths:
-            if p.val <= temp_val:
+            if p.val < temp_val:
+                temp_val = p.val
                 final_path = p
 
-        print(p)
+        #print(final_path)
+        
+        # Start decoding the path
+        final_bit_stream = []
+        for i in range(len(final_path.path)):
+            temp = final_path.path[i]
+            try:
+                temp2 = final_path.path[i+1]
+            except:
+                continue
+            #print("Processing for %s -> %s" % (temp, temp2))
+            #raw_input("Next?")
+            rb   = self._states[temp].return_bit(temp2)
+            final_bit_stream.append(rb)
+        return final_bit_stream
 
     def __repr__(self):
         rs = "States\n"
@@ -118,7 +133,7 @@ def main():
     s10.add_logic([(0b10, 0, "00"), (0b01, 1, "10")])
 
     s11 = State("11")
-    s11.add_logic([(0b10, 1, "11"),(0b01, 0, "01")])
+    s11.add_logic([(0b10, 1, "11"), (0b01, 0, "01")])
 
     t = Trellis([s00, s01, s10, s11])
 #    print(t)
@@ -132,7 +147,8 @@ def main():
     The input is a LIST (array) of the binary digits. 
     """
     tst = [0b11, 0b10, 0b11, 0b00, 0b01, 0b10]
-    t.run(tst)
+#    tst = []
+    print(t.run(tst))
 
 if __name__ == "__main__":
     main()
