@@ -19,3 +19,13 @@ or
 ```
 sudo apt-get install python-pyaudio
 ```
+
+## Trellis Project
+Files needed: 
+* trellis.py
+* state.py
+
+Run 
+```
+python trellis.py
+```
