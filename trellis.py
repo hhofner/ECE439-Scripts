@@ -9,7 +9,7 @@ class Path(object):
     This is almost a direct implementation of MIT's Convolutional Coding (Lecture 9)
     on how to decode with a trellis. This class holds a list that contains a particular
     path through the Trellis and an associated value for that path that tells you how 
-    probable the path was.
+    probable the path was. It utilizes a hamming distance.
     """ 
     def __init__(self):
         self._val = None  # Infinite
@@ -54,7 +54,7 @@ class Trellis(object):
 
     Methods:
     run(bit_stream) -- return a list with the decoded bit stream
-    set_up()             -- "sets up" the trellis
+    set_up()        -- "sets up" the trellis
 
     To properly set up a trellis, one must pass a list of State objects that 
     properly describe the state machine for the encoder. After that, you must run
@@ -85,15 +85,12 @@ class Trellis(object):
         """ Run through trellis
 
         Arguments:
-        stream -- (string): the encoded message 
+        stream -- the encoded message as a list (array) of integers
 
         Return:
-        mssg -- (string): the decoded message based on the trellis (state machine)
+        mssg   -- (string): the decoded message based on the trellis (state machine)
             that was set up
         """
-
-        # INPUT: LIST OF BITS
-        # I'm assumming that `stream` is a list of input bits
 
         for rcvd in stream:
             temp = []
@@ -139,11 +136,13 @@ class Trellis(object):
         return rs
 
 def main():
-    """
-    Set up your trellis here! 
-    """
+    """ Sample Trellis set up. """
+
+    # Create State objects. 
     s00 = State("00")
     s00.set_starting_state()
+    
+    # Input to `add_logic`: [ (output, bit_read, next_state), (output2, bit_read2, next_state2), ..]
     s00.add_logic([(0b00, 0, "00"), (0b11, 1, "10")])
 
     s01 = State("10")
@@ -155,11 +154,11 @@ def main():
     s11 = State("11")
     s11.add_logic([(0b10, 1, "11"), (0b01, 0, "01")])
 
+    # Create Trellis Object passing the State Objects 
     t = Trellis([s00, s01, s10, s11])
-#    print(t)
 
+    # Set up the Trellis
     t.set_up()
-#    print(t.paths[0].path)
 
 
     """
@@ -167,7 +166,8 @@ def main():
     The input is a LIST (array) of the binary digits. 
     """
     tst = [0b11, 0b10, 0b11, 0b00, 0b01, 0b10]
-#    tst = []
+
+    # Call `run` and passing `tst` list
     print(t.run(tst))
 
 if __name__ == "__main__":
