@@ -56,12 +56,7 @@ class State(object):
 
     def next_state(self, arg):
         return self._logic(arg)
-
-    # TODO: Refresh refreshes some values 
-    # That allows me to easily go through....idk
-    def refresh(self):
-        pass
-
+    
     @property
     def name(self):
         return self._name
